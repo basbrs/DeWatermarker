@@ -40,13 +40,14 @@ def _watermark_single(args):
 
 def watermark_images(src, dst, watermark):
     names = os.listdir(src)
+
     params = zip(names, itertools.repeat((src, dst, watermark), len(names)))
 
     with mp.Pool(mp.cpu_count()) as p:
         list(tqdm(p.imap(_watermark_single, params), total=len(names)))
 
 
-def resize_images(src, dst, target_dim):
+def resize_images(src, dst, target_dim, rotate=False):
     images = os.listdir(src)
     ratio = target_dim[0] / target_dim[1]
 
@@ -57,6 +58,10 @@ def resize_images(src, dst, target_dim):
             if im.shape[1] / im.shape[0] == ratio:
                 new = cv2.resize(im, dsize=target_dim)
                 name_index += 1
+
+                if rotate:
+                    new = cv2.rotate(new, cv2.ROTATE_90_CLOCKWISE)
+
                 cv2.imwrite(dst + str(name_index) + ".jpg", new)
         except AttributeError:
             print("AttributeError @", name)
