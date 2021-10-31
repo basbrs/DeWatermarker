@@ -1,3 +1,4 @@
+import cv2
 from tensorflow.python.keras import Input
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, UpSampling2D
 from tensorflow.python.keras.models import Model
@@ -24,7 +25,7 @@ def build_autoencoder():
     x = UpSampling2D((2, 2))(x)
     decoded = Conv2D(filters=INPUT_SHAPE[-1], kernel_size=(3, 3), activation="sigmoid", padding="same")(x)
 
-    model = Model(encoder, decoded)
+    model = Model(encoder, decoded, name="autoencoder")
     model.compile(optimizer="adam", loss="binary_crossentropy")
     model.summary()
     return model
@@ -38,7 +39,13 @@ def build_convolutional():
     x = UpSampling2D((2, 2))(x)
     output_layer = Conv2D(filters=INPUT_SHAPE[-1], kernel_size=(3, 3), activation="sigmoid", padding="same")(x)
 
-    model = Model(input_layer, output_layer)
+    model = Model(input_layer, output_layer, name="convolutional")
     model.compile(optimizer="adam", loss="binary_crossentropy")
     model.summary()
     return model
+
+
+def inference(model, image_path):
+    image = cv2.imread(image_path)
+    result = model.predict([image])
+    cv2.imwrite()
