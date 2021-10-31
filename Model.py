@@ -1,8 +1,3 @@
-import os
-import numpy as np
-import cv2
-import tqdm
-
 from tensorflow.python.keras import Input
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, UpSampling2D
 from tensorflow.python.keras.models import Model
@@ -47,25 +42,3 @@ def build_convolutional():
     model.compile(optimizer="adam", loss="binary_crossentropy")
     model.summary()
     return model
-
-
-def open_data(data_path, label_path, test_split):
-    data = []
-    labels = []
-
-    names = os.listdir(data_path)[:100]
-    train_size = len(names) - int(test_split * len(names))
-
-    print("loading data...")
-    for name in tqdm.tqdm(names):
-        data.append(cv2.imread(os.path.join(data_path, name)))
-        labels.append(cv2.imread(os.path.join(label_path, name)))
-
-    data = np.array(data)
-    labels = np.array(labels)
-
-    shuffle = np.random.permutation(len(names))
-    data = data[shuffle]
-    labels = labels[shuffle]
-
-    return (data[:train_size], labels[:train_size]), (data[train_size:], labels[train_size:])
