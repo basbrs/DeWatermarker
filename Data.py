@@ -10,7 +10,8 @@ def open_data(data_path, label_path, test_split):
     data = []
     labels = []
 
-    names = os.listdir(data_path)[:100]
+    names = os.listdir(data_path)
+    names = names[0:len(names) // 20]
     train_size = len(names) - int(test_split * len(names))
 
     print("loading data...")
