@@ -8,7 +8,7 @@ INPUT_SHAPE = (480, 640, 3)
 INITIAL_FILTER_SIZE = 64
 
 
-def build_autoencoder():
+def _build_autoencoder():
     encoder = Input(shape=INPUT_SHAPE)
     x = Conv2D(filters=INITIAL_FILTER_SIZE, kernel_size=(3, 3), activation="elu", padding="same")(encoder)
     x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
@@ -31,16 +31,23 @@ def build_autoencoder():
     return model
 
 
-def build_convolutional():
+def get_model(name):
+    if name == "convolutional":
+        return _build_convolutional()
+    elif name == "autoencoder":
+        return _build_autoencoder()
+
+
+def _build_convolutional():
     input_layer = Input(shape=INPUT_SHAPE)
-    x = Conv2D(filters=INITIAL_FILTER_SIZE, kernel_size=(3, 3), activation="elu", padding="same")(input_layer)
+    x = Conv2D(filters=INITIAL_FILTER_SIZE, kernel_size=(5, 5), activation="elu", padding="same")(input_layer)
     x = MaxPooling2D(pool_size=(2, 2), padding="same")(x)
-    x = Conv2D(filters=INITIAL_FILTER_SIZE, kernel_size=(3, 3), activation="elu", padding="same")(x)
+    x = Conv2D(filters=INITIAL_FILTER_SIZE, kernel_size=(5, 5), activation="elu", padding="same")(x)
     x = UpSampling2D((2, 2))(x)
-    output_layer = Conv2D(filters=INPUT_SHAPE[-1], kernel_size=(3, 3), activation="sigmoid", padding="same")(x)
+    output_layer = Conv2D(filters=INPUT_SHAPE[-1], kernel_size=(5, 5), activation="sigmoid", padding="same")(x)
 
     model = Model(input_layer, output_layer, name="convolutional")
-    model.compile(optimizer="adam", loss="binary_crossentropy")
+    model.compile(optimizer="adam", loss="mse")
     model.summary()
     return model
 
